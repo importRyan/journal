@@ -1,3 +1,3 @@
 # Journaling
 
-A description of this package.
+Logic for the Journal app.
