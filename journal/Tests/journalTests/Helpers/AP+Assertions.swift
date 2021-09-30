@@ -12,6 +12,7 @@ public extension XCTestCase {
         exitCode: ExitCode = .success,
         waitForExpectations: [XCTestExpectation] = [],
         maximumRunTime: TimeInterval = 3,
+        includeErrorOutput: Bool,
         file: StaticString = #file, line: UInt = #line)
     {
         let splitCommand = command.split(separator: " ")
@@ -52,6 +53,7 @@ public extension XCTestCase {
             process.launch()
         }
         wait(for: [doesExitByMaximumWaitTime], timeout: maximumRunTime)
+        let status = Int(process.terminationStatus)
         process.terminate()
 
         let outputData = output.fileHandleForReading.readDataToEndOfFile()
@@ -60,11 +62,14 @@ public extension XCTestCase {
         let errorData = error.fileHandleForReading.readDataToEndOfFile()
         let errorActual = String(data: errorData, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
 
+        let combinedOutput = includeErrorOutput ? errorActual + outputActual : outputActual
+
         if let expected = expected {
-            AssertEqualStringsIgnoringTrailingWhitespace(expected, errorActual + outputActual, file: file, line: line)
+            AssertEqualStringsIgnoringTrailingWhitespace(expected, combinedOutput, file: file, line: line)
         }
 
-        XCTAssertEqual(process.terminationStatus, exitCode.rawValue, file: (file), line: line)
+        XCTAssertEqual(status, Int(exitCode.rawValue),
+                       "Process terminated with code \(status)", file: (file), line: line)
     }
 
     /// Test the process exits before a time limit (default: 3 seconds). Includes a wall clock expectation. Does not evaluate outputs.
