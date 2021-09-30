@@ -15,11 +15,11 @@ struct List: ParsableCommand {
         startApp { [self] in
             let entries = app.store.listEntries()
 
-            // Format entries into text table
-            let vm = EntryListViewModel(entries: entries,
-                                        formatting: app.formatting.current)
-            let tableViewContent = vm.parseForTableView()
-            render(tableViewContent: tableViewContent)
+            if entries.isEmpty {
+                displayEmptyMessage()
+            } else {
+                render(entries: entries)
+            }
 
             app.exit { _ in
                 Self.exit()
@@ -28,11 +28,23 @@ struct List: ParsableCommand {
     }
 
     private var tableView = PlainTextTableView(
-        columns: List.EntryListViewModel.tableViewColumns,
-        options: List.EntryListViewModel.tableViewOptions
+        columns: List.EntriesTableViewModel.tableViewColumns,
+        options: List.EntriesTableViewModel.tableViewOptions
     )
 
-    private func render(tableViewContent: [[String]]) {
+    private func displayEmptyMessage() {
+        CommandLine.output("No entries available.")
+    }
+
+    private func render(entries: [JJEntry]) {
+        // Format entries into text table
+        let vm: EntriesListTextOnlyViewModel = List.EntriesTableViewModel(
+            entries: entries,
+            formatting: app.formatting.current
+        )
+        let tableViewContent = vm.parseForTableView()
+
+        // Render
         let width = CommandLine.getViewportColumnWidthOrDefault()
         tableView.layoutByColumnAndViewportConstraints(viewportWidth: width)
         let table = tableView.render(content: tableViewContent)
@@ -42,26 +54,24 @@ struct List: ParsableCommand {
 
 // MARK: - View Model
 
-extension List {
+public protocol EntriesListTextOnlyViewModel {
+    init(entries: [JJEntry], formatting: JJEntryFormatting)
+    /// Outer: Rows. Inner: Columns.
+    func parseForTableView() -> [[String]]
+}
 
-    struct EntryListViewModel {
+extension List {
+    public struct EntriesTableViewModel {
 
         private var entries: [JJEntry]
         private let formatting: JJEntryFormatting
 
-        init(entries: [JJEntry], formatting: JJEntryFormatting) {
+        public init(entries: [JJEntry], formatting: JJEntryFormatting) {
             self.entries = entries
             self.formatting = formatting
         }
 
-        /// Outer: Rows. Inner: Columns.
-        func parseForTableView() -> [[String]] {
-            entries.map { entry in
-                [formatting.title.format(entry.title)]
-            }
-        }
-
-        static let tableViewColumns: [PlainTextTableView.Column] = [
+        public static let tableViewColumns: [PlainTextTableView.Column] = [
             .init(
                 title: "Title",
                 minWidth: 10, initialWidth: nil, maxWidth: nil,
@@ -70,11 +80,21 @@ extension List {
             )
         ]
 
-        static let tableViewOptions = PlainTextTableView.Options(
+        public static let tableViewOptions = PlainTextTableView.Options(
             rowLabeling: .showIndexesZeroBased,
             columnMarginWidth: 1,
             showColumnHeaders: true,
             capitalizeColumnHeaders: true
         )
+    }
+}
+
+extension List.EntriesTableViewModel: EntriesListTextOnlyViewModel {
+
+    /// Outer: Rows. Inner: Columns.
+    public func parseForTableView() -> [[String]] {
+        entries.map { entry in
+            [formatting.title.format(entry.title)]
+        }
     }
 }
