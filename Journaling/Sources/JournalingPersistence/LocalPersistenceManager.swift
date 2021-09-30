@@ -11,14 +11,17 @@ public class LocalPersistenceManager {
     private weak var logger: Logging?
     private let queue: DispatchQueue
     private let mode: EntryLoadingMode
+    private let location: JournalLibraryLocation
 
     public init(mode: EntryLoadingMode,
+                location: JournalLibraryLocation,
                 logger: Logging,
                 queue: DispatchQueue = .init(label: "\(appIdentifier).localPersistence",
                                              qos: .background)) {
         self.queue = queue
         self.mode = mode
         self.logger = logger
+        self.location = location
     }
 }
 

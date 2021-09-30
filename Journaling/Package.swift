@@ -25,5 +25,8 @@ let package = Package(
         .testTarget(
             name: "JournalingTests",
             dependencies: ["Journaling"]),
+        .testTarget(
+            name: "JournalingPersistenceTests",
+            dependencies: ["JournalingPersistence"]),
     ]
 )
