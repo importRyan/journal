@@ -41,5 +41,9 @@ public extension JJEntry {
             dateEdited = Date()
         }
     }
+
+    mutating func changeID(_ newID: ID) {
+        self.id = newID
+    }
 }
 
