@@ -5,6 +5,7 @@ import Foundation
 
 public protocol AppConfig {
     var loadEntries: EntryLoadingMode { get }
+    var formatting: JJEntryFormatting { get }
 }
 
 // MARK: - Model
@@ -17,11 +18,17 @@ public enum EntryLoadingMode {
 // MARK: - Configurations
 
 public struct DevelopmentConfig: AppConfig {
-    public init() { }
+    public init(formatting: JJEntryFormatting) {
+        self.formatting = formatting
+    }
     public let loadEntries: EntryLoadingMode = .immediatelyLoadUserEntryLibrary
+    public let formatting: JJEntryFormatting
 }
 
 public struct AddOnlyDevelopmentConfig: AppConfig {
-    public init() { }
+    public init(formatting: JJEntryFormatting) {
+        self.formatting = formatting
+    }
     public let loadEntries: EntryLoadingMode = .writeOnlyMode
+    public let formatting: JJEntryFormatting
 }

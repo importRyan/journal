@@ -9,6 +9,7 @@ public protocol JournalingApp: AnyObject {
     
     var store: JournalEntryStore { get }
     var logger: Logging { get }
+    var formatting: JJFormatting { get }
 
     func start(tasksDidComplete: @escaping (Error?) -> Void)
     func exit(tasksDidComplete: @escaping (Error?) -> Void)

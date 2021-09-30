@@ -12,7 +12,13 @@ public struct MockLoader: AppLoader {
         let logger = SystemLogger(label: "mocks")
         let persistence = MockPersistenceManager(mode: configuration.loadEntries, logger: logger)
         let store = MockJournalStore(persistence: persistence, logger: logger)
+        let formatter = JJStaticFormattingStore(formatter: configuration.formatting)
 
-        return .success(.init(persistence: persistence, store: store, logger: logger))
+        return .success(
+            .init(persistence: persistence,
+                  store: store,
+                  logger: logger,
+                  formatting: formatter)
+        )
     }
 }

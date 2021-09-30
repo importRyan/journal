@@ -8,6 +8,7 @@ public class JournalApp {
 
     public let store: JournalEntryStore
     public let logger: Logging
+    public let formatting: JJFormatting
 
     private let persistence: Persisting
     private var appStartup: AnyCancellable? = nil
@@ -18,6 +19,7 @@ public class JournalApp {
                 self.store = loadables.store
                 self.persistence = loadables.persistence
                 self.logger = loadables.logger
+                self.formatting = loadables.formatting
 
             case .failure(let error):
                 throw error

@@ -11,6 +11,7 @@ public struct AppLoadables {
     public let persistence: Persisting
     public let store: JournalEntryStore
     public let logger: Logging
+    public let formatting: JJFormatting
 }
 
 enum LoadingError: String, Error {

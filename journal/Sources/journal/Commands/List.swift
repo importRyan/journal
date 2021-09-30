@@ -16,7 +16,8 @@ struct List: ParsableCommand {
             let entries = app.store.listEntries()
 
             // Format entries into text table
-            let vm = EntryListViewModel(entries: entries)
+            let vm = EntryListViewModel(entries: entries,
+                                        formatting: app.formatting.current)
             let tableViewContent = vm.parseForTableView()
             render(tableViewContent: tableViewContent)
 
@@ -46,15 +47,17 @@ extension List {
     struct EntryListViewModel {
 
         private var entries: [JJEntry]
+        private let formatting: JJEntryFormatting
 
-        init(entries: [JJEntry]) {
+        init(entries: [JJEntry], formatting: JJEntryFormatting) {
             self.entries = entries
+            self.formatting = formatting
         }
 
         /// Outer: Rows. Inner: Columns.
         func parseForTableView() -> [[String]] {
             entries.map { entry in
-                [entry.title]
+                [formatting.title.format(entry.title)]
             }
         }
 
