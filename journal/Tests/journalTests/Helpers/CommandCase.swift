@@ -18,6 +18,10 @@ struct CommandCase {
         XCTestCase.appName + " " + command
     }
 
+    func userInputWithLazyLoadOverride() -> String {
+        [XCTestCase.appName, "--lazy", command].joined(separator: " ")
+    }
+
     init(command: String, expectedOutput: String, exitCode: ExitCode) {
         self.command = command
         self.expectedOutput = expectedOutput

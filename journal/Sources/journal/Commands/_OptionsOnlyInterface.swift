@@ -2,6 +2,7 @@
 
 import Foundation
 import ArgumentParser
+import Journaling
 
 /// Generates the assigned user-facing interface
 /// of optional arguments with long labels.
@@ -23,11 +24,22 @@ struct OptionsOnlyInterface: ParsableCommand {
     @Option(name: .customLong("create"), help: Add.Help.entry) var entry: String = ""
     @Option(name: .customLong("title"),  help: Add.Help.title) var title: String = ""
     @Flag  (name: .customLong("list"),   help: .init(List.configuration.abstract)) var enumerateEntries = false
+    // Test usage
+    @Flag  (name: .customLong("lazy"), help: .hidden) var lazilyLoadEntriesOverride = false
 
     mutating func run() throws {
+        #if DEBUG
+        _handleDevelopmentFlags()
+        #endif
         let add = forwardAddEntrySubcommand()
         let list = forwardListSubcommand()
         showHelpIfNoCommandsForwarded(add, list)
+    }
+
+    func _handleDevelopmentFlags() {
+        if lazilyLoadEntriesOverride {
+            _setConfigurationOverride(AddOnlyDevelopmentConfig())
+        }
     }
 }
 
