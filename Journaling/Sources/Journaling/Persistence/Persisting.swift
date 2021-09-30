@@ -26,6 +26,9 @@ public protocol PersistingErrorHandlingDelegate: AnyObject {
 /// Contents of the app's persistent store
 public struct JournalLibraryLoadable {
     public let entries: [JJEntry]
+    public init(entries: [JJEntry]) {
+        self.entries = entries
+    }
 }
 
 /// Communicates ID collections when saving
