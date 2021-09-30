@@ -3,16 +3,24 @@
 
 import Foundation
 
-public struct MockLoader: AppLoader {
+public class MockLoader: AppLoader {
 
     public init() { }
+    public var overrideConfig: AppConfig? = nil
+    public weak var loggerReference: SystemLogger? = nil
+    public weak var persistenceReference: MockPersistenceManager? = nil
 
     public func load(with configuration: AppConfig) -> Result<AppLoadables,Error> {
 
+        let config = overrideConfig ?? configuration
+
         let logger = SystemLogger(label: "mocks")
-        let persistence = MockPersistenceManager(mode: configuration.loadEntries, logger: logger)
+        let persistence = MockPersistenceManager(mode: config.loadEntries, logger: logger)
         let store = MockJournalStore(persistence: persistence, logger: logger)
-        let formatter = JJStaticFormattingStore(formatter: configuration.formatting)
+        let formatter = JJStaticFormattingStore(formatter: config.formatting)
+
+        self.loggerReference = logger
+        self.persistenceReference = persistence
 
         return .success(
             .init(persistence: persistence,
