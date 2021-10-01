@@ -32,10 +32,10 @@ final class PlainTextTableViewTests: XCTestCase {
         sut.layoutByColumnAndViewportConstraints(updatedTo: [], viewportWidth: 20)
         let result1 = sut.render(content: test)
 
-            AssertMultilineStringsEqual(exp: exp1, result: result1, tolerateEndOfLineWhitespaces: true)
+        AssertMultilineStringsEqual(exp: exp1, result: result1, tolerateEndOfLineWhitespaces: true)
     }
 
-    func test_ColumnWrapping_3Column_ViewportBreaksWords_DoesNotSTartNewLineWithCommas() {
+    func test_ColumnWrapping_3Column_ViewportBreaksWordsWithinColumns() {
         let exp1 = """
         # TITLE      CREATED    MODIFIED
         0 Imagine    27/02/1970 27/02/1970,
@@ -64,7 +64,7 @@ final class PlainTextTableViewTests: XCTestCase {
         sut.layoutByColumnAndViewportConstraints(updatedTo: [], viewportWidth: 20)
         let result1 = sut.render(content: test)
 
-            AssertMultilineStringsEqual(exp: exp1, result: result1, tolerateEndOfLineWhitespaces: true)
+        AssertMultilineStringsEqual(exp: exp1, result: result1, tolerateEndOfLineWhitespaces: true)
     }
 
     func test_ColumnWrapping_1Column_BreaksOnLastSpace() {
@@ -87,7 +87,7 @@ final class PlainTextTableViewTests: XCTestCase {
         sut.layoutByColumnAndViewportConstraints(updatedTo: [], viewportWidth: 28)
         let result1 = sut.render(content: test)
 
-            AssertMultilineStringsEqual(exp: exp1, result: result1, tolerateEndOfLineWhitespaces: true)
+        AssertMultilineStringsEqual(exp: exp1, result: result1, tolerateEndOfLineWhitespaces: true)
     }
 
     func test_ColumnWrapping_3Column_DoesNotStartNewLineWithSpaces() {
@@ -718,16 +718,16 @@ enum Mocks {
                 wrap: .wrapInsideColumn
             ),
              .init(
-                 title: "Created",
-                 minWidth: 10, initialWidth: nil, maxWidth: nil,
-                 adjustability: .resistance(0),
-                 wrap: .wrapInsideColumn
+                title: "Created",
+                minWidth: 10, initialWidth: nil, maxWidth: nil,
+                adjustability: .resistance(0),
+                wrap: .wrapInsideColumn
              ),
              .init(
-                 title: "Modified",
-                 minWidth: 10, initialWidth: nil, maxWidth: nil,
-                 adjustability: .resistance(0),
-                 wrap: .wrapInsideColumn
+                title: "Modified",
+                minWidth: 10, initialWidth: nil, maxWidth: nil,
+                adjustability: .resistance(0),
+                wrap: .wrapInsideColumn
              )
             ]
         }
