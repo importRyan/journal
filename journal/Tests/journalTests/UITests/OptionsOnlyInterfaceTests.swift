@@ -6,22 +6,21 @@ import ArgumentParser
 
 final class OptionsOnlyInterfaceTests: XCTestCase {
 
-    func test_ExitsByWallClock_WithValidCommands() {
-        let commands = [
-            "",
-            "--list",
-            "--create \"entry\"",
-            "--create \"entry\" --title \"heading\"",
+    func test_ExitsByWallClock_WithAPICommands() {
+        let commands: [CommandCase] = [
+            .init(incomplete: ""),
+            .init(valid: "--list"),
+            .init(valid: "--create \"entry\""),
+            .init(valid: "--create \"entry\" --title \"heading\""),
+            .init(valid: "--help"),
         ]
 
-        commands.forEach { command in
-            XCTExpectFailure("Troubleshooting sporadic exit code 5 after Monterey beta 21A5534d update", options: .nonStrict()) {
-                AssertExecuteCommand(
-                    command: Self.appName + " " + command,
-                    exitCodes: [.success, .validationFailure],
-                    maximumRunTime: 1
-                )
-            }
+        commands.forEach { test in
+            AssertExecuteCommand(
+                command: test.userInput(),
+                exitCodes: [test.exitCode],
+                maximumRunTime: 5
+            )
         }
     }
 
@@ -129,7 +128,7 @@ OPTIONS:
             command: test.userInput(),
             expected: test.expectedOutput,
             exitCodes: [test.exitCode],
-            maximumRunTime: 20,
+            maximumRunTime: 1,
             includeErrorOutput: false
         )
     }

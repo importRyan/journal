@@ -13,34 +13,45 @@ struct CommandCase {
     let command: String
     let expectedOutput: String
     let exitCode: ExitCode
+    let lazyLoadFlag = "--lazy"
+    let useMockFlag = "--mock" // Doesn't read/write disk
 
-    func userInput() -> String {
-        XCTestCase.appName + " " + command
+    /// Adds the app name and inserts a mocking flag to read and write from a mock data store.
+    func userInput(withoutMockFlag: Bool = false) -> String {
+        [XCTestCase.appName,
+         withoutMockFlag ? nil : useMockFlag,
+         command
+        ].compactMap{$0}.joined(separator: " ")
     }
 
-    func userInputWithLazyLoadOverride() -> String {
-        [XCTestCase.appName, "--lazy", command].joined(separator: " ")
+    /// Adds the app name and inserts a mocking flag to read and write from a mock data store.
+    func userInputWithLazyLoadOverride(withoutMockFlag: Bool = false) -> String {
+        [XCTestCase.appName,
+         withoutMockFlag ? nil : useMockFlag,
+         lazyLoadFlag,
+         command
+        ].compactMap{$0}.joined(separator: " ")
     }
 
-    init(command: String, expectedOutput: String, exitCode: ExitCode) {
+    init(command: String, expectedOutput: String = "", exitCode: ExitCode) {
         self.command = command
         self.expectedOutput = expectedOutput
         self.exitCode = exitCode
     }
 
-    init(valid: String, expectedOutput: String) {
+    init(valid: String, expectedOutput: String = "") {
         self.command = valid
         self.expectedOutput = expectedOutput
         self.exitCode = .success
     }
 
-    init(incomplete: String, expectedOutput: String) {
+    init(incomplete: String, expectedOutput: String = "") {
         self.command = incomplete
         self.expectedOutput = expectedOutput
         self.exitCode = .validationFailure
     }
 
-    init(failing: String, expectedOutput: String) {
+    init(failing: String, expectedOutput: String = "") {
         self.command = failing
         self.expectedOutput = expectedOutput
         self.exitCode = .failure
