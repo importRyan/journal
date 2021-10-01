@@ -49,10 +49,10 @@ extension MockPersistenceManager: Persisting {
         Self.mockEntries.append(contentsOf: entries)
     }
 
-    public func performRemainingTasksBeforeTermination(tasksDidComplete: @escaping (Error?) -> Void) {
-        queue.asyncAfter(deadline: .now() + 0.3) { [self] in
+    public func appWillTerminate() -> Result<Void, Error> {
+        queue.sync { [self] in
             self.logger?.log(event: "Persistence finished saving files.")
-            tasksDidComplete(nil)
+            return .success(())
         }
     }
 }

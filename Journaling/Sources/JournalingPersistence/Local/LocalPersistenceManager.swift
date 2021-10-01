@@ -91,22 +91,20 @@ extension LocalPersistenceManager: Persisting {
                 }
                 self.logger?.log(event: "Persistence scheduled to save \(entries.endIndex) entries")
                 writeScheduler.send(.init())
-
             } catch {
                 self.logger?.log(error: error)
             }
         }
     }
 
-    public func performRemainingTasksBeforeTermination(tasksDidComplete: @escaping (Error?) -> Void) {
-        queue.async { [self] in
+    public func appWillTerminate() -> Result<Void, Error> {
+        queue.sync {
             do {
-                writePipeline?.cancel()
                 try writeFileWrapperToDisk()
                 self.logger?.log(event: "Persistence finished saving files.")
-                tasksDidComplete(nil)
+                return .success(())
             } catch {
-                tasksDidComplete(error)
+                return .failure(error)
             }
         }
     }

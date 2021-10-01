@@ -14,7 +14,7 @@ public protocol Persisting: AnyObject {
     /// Saves one or more entries asynchronously.
     func save(entries: [JJEntry])
 
-    func performRemainingTasksBeforeTermination(tasksDidComplete: @escaping (Error?) -> Void)
+    func appWillTerminate() -> Result<Void,Error>
 }
 
 public protocol PersistingErrorHandlingDelegate: AnyObject {

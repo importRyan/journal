@@ -6,6 +6,7 @@ import Combine
 
 public protocol JournalEntryStore: AnyObject, EntriesProviding, EntriesEditing {
     func start() -> AnyPublisher<Void,Error>
+    func appWillTerminate() -> Result<Void,Error>
 }
 
 // MARK: - Component Functions
