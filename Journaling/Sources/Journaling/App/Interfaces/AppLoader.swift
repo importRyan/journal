@@ -12,8 +12,15 @@ public struct AppLoadables {
     public let store: JournalEntryStore
     public let logger: Logging
     public let formatting: JJFormatting
+
+    public init(persistence: Persisting, store: JournalEntryStore, logger: Logging, formatting: JJFormatting) {
+        self.persistence = persistence
+        self.store = store
+        self.logger = logger
+        self.formatting = formatting
+    }
 }
 
-enum LoadingError: String, Error {
+public enum LoadingError: String, Error {
     case persistenceServiceUnavailable
 }
