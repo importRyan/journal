@@ -9,7 +9,7 @@ public extension XCTestCase {
     func AssertExecuteCommand(
         command: String,
         expected: String? = nil,
-        exitCode: ExitCode = .success,
+        exitCodes: [ExitCode] = [.success],
         waitForExpectations: [XCTestExpectation] = [],
         maximumRunTime: TimeInterval = 3,
         includeErrorOutput: Bool,
@@ -68,8 +68,8 @@ public extension XCTestCase {
             AssertEqualStringsIgnoringTrailingWhitespace(expected, combinedOutput, file: file, line: line)
         }
 
-        XCTAssertEqual(status, Int(exitCode.rawValue),
-                       "Process terminated with code \(status)", file: (file), line: line)
+        XCTAssertTrue(exitCodes.map { Int($0.rawValue) }.contains(status),
+                      "Process terminated with code \(status)", file: (file), line: line)
     }
 
     /// Test the process exits before a time limit (default: 3 seconds). Includes a wall clock expectation. Does not evaluate outputs.
@@ -126,17 +126,17 @@ public extension XCTestCase {
 // MARK: - Temporarily Customized
 
 public func AssertEqualStringsIgnoringTrailingWhitespace(_ string1: String, _ string2: String, file: StaticString = #file, line: UInt = #line) {
-  let lines1 = string1.split(separator: "\n", omittingEmptySubsequences: false)
-  let lines2 = string2.split(separator: "\n", omittingEmptySubsequences: false)
+    let lines1 = string1.split(separator: "\n", omittingEmptySubsequences: false)
+    let lines2 = string2.split(separator: "\n", omittingEmptySubsequences: false)
 
-  XCTAssertEqual(lines1.count, lines2.count, "Strings have different numbers of lines.", file: (file), line: line)
+    XCTAssertEqual(lines1.count, lines2.count, "Strings have different numbers of lines.", file: (file), line: line)
     if lines1.endIndex != lines2.endIndex || string1 != string2 {
         print("---ACTUAL---")
         print(string2)
         print("---EXPECTED---")
         print(string1)
     }
-  for (line1, line2) in zip(lines1, lines2) {
-    XCTAssertEqual(line1.trimmed(), line2.trimmed(), file: (file), line: line)
-  }
+    for (line1, line2) in zip(lines1, lines2) {
+        XCTAssertEqual(line1.trimmed(), line2.trimmed(), file: (file), line: line)
+    }
 }
