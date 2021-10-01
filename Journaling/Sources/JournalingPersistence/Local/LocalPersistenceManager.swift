@@ -165,7 +165,7 @@ private extension LocalPersistenceManager {
     func writeFileWrapperToDisk() throws {
         guard let url = try? location.getAppUserDataFolder() else { return }
         guard wrapper?.matchesContents(of: url) == false else { return }
-        try wrapper?.write(to: url, options: .withNameUpdating, originalContentsURL: url)
+        try wrapper?.write(to: url, options: .atomic, originalContentsURL: url)
     }
 
     func saveToFileWrapper(_ wrapper: FileWrapper, entry: JJEntry) throws {
