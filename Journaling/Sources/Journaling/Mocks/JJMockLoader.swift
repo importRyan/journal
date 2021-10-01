@@ -7,12 +7,12 @@ public class JJMockLoader: JJAppLoader {
 
     public let seedEntries: [JJEntry]
 
-    public init(seedEntries: [JJEntry] = JJMockPersistenceManager.makeMockEntries(count: 5)) {
+    public init(seedEntries: [JJEntry] = JJMockPersistence.makeMockEntries(count: 5)) {
         self.seedEntries = seedEntries
     }
     public var overrideConfig: JJAppConfig? = nil
     public weak var loggerReference: JJSystemLogger? = nil
-    public weak var persistenceReference: JJMockPersistenceManager? = nil
+    public weak var persistenceReference: JJMockPersistence? = nil
 
     public func load(with configuration: JJAppConfig) -> Result<JJAppLoadables,Error> {
 
@@ -20,7 +20,7 @@ public class JJMockLoader: JJAppLoader {
 
         let logger = JJSystemLogger(label: "mocks")
 
-        let persistence = JJMockPersistenceManager(
+        let persistence = JJMockPersistence(
             seedEntries: seedEntries,
             mode: config.loadEntries,
             location: config.journalLocation,
