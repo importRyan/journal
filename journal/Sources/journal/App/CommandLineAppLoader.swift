@@ -24,7 +24,9 @@ internal class CommandLineLoader: AppLoader {
             logger: logger
         )
 
-        let formatter = JJStaticFormattingStore(formatter: configuration.formatting)
+        let formatter = JJStaticFormattingStore(
+            formatter: configuration.formatting
+        )
 
         return .success(
             .init(persistence: persistence,

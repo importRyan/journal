@@ -60,7 +60,7 @@ extension MockJournalStore: EntriesProviding {
         queue.sync {
             entries = self.entries.map(\.value)
         }
-        // Temporary convenience for stability before Monday
+        // Temporary convenience for order stability before Monday
         return entries.sorted { $0.dateEdited > $1.dateEdited }
     }
 }
@@ -80,7 +80,7 @@ extension MockJournalStore: EntriesEditing {
     }
 }
 
-// MARK: - Handle an unlikely persistence UUID collision
+// MARK: - Handle an unlikely UUID collision when saving files
 
 extension MockJournalStore: PersistingErrorHandlingDelegate {
 
