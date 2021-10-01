@@ -6,8 +6,6 @@ import ArgumentParser
 
 // App lazily loaded after parsing command line input.
 fileprivate(set) var app: JournalingApp! = nil
-fileprivate var loader: AppLoader = MockLoader()
-fileprivate var overrideConfig: AppConfig? = nil
 
 // Launch a command line user interface.
 OptionsOnlyInterface.main()
@@ -29,8 +27,6 @@ func startApp(config: AppConfig = DevelopmentConfig(), didStart: @escaping () ->
     } catch { exit(with: error) }
 }
 
-func _setConfigurationOverride(_ override: AppConfig) {
-    overrideConfig = override
 }
 
 fileprivate func reportLoadAttempt() {
@@ -41,4 +37,16 @@ fileprivate func exit(with error: Error) {
     NSLog("Journal app failed to load.")
     NSLog(error.localizedDescription)
     exit(EXIT_FAILURE)
+
+// MARK: - Overrides for dependency injection via private/public command line flags
+
+fileprivate var loader: AppLoader = CommandLineLoader()
+fileprivate var overrideConfig: AppConfig? = nil
+
+func _setConfigurationOverride(_ override: AppConfig) {
+    overrideConfig = override
+}
+
+func _setLoaderOverride(_ override: AppLoader) {
+    loader = override
 }

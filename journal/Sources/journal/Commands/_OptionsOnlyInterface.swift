@@ -26,6 +26,7 @@ struct OptionsOnlyInterface: ParsableCommand {
     @Flag  (name: .customLong("list"),   help: .init(List.configuration.abstract)) var enumerateEntries = false
     // Test usage
     @Flag  (name: .customLong("lazy"), help: .hidden) var lazilyLoadEntriesOverride = false
+    @Flag  (name: .customLong("mock"), help: .hidden) var useMockLoader = false
 
     mutating func run() throws {
         #if DEBUG
@@ -39,6 +40,9 @@ struct OptionsOnlyInterface: ParsableCommand {
     func _handleDevelopmentFlags() {
         if lazilyLoadEntriesOverride {
             _setConfigurationOverride(AddOnlyDevelopmentConfig())
+        }
+        if useMockLoader {
+            _setLoaderOverride(MockLoader())
         }
     }
 }
