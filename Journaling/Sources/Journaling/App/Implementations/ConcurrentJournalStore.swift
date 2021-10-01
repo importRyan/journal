@@ -66,10 +66,11 @@ extension ConcurrentJournalStore: EntriesProviding {
 
     public func listEntries() -> [JJEntry] {
         var entries: [JJEntry] = []
-        defer { self.logging?.log(event: "JournalStore served entry list of \(entries.endIndex)") }
         queue.sync {
             entries = self.entries.map(\.value)
         }
+        self.logging?.log(event: "JournalStore served entry list of \(entries.endIndex)")
+
         // Temporary convenience for order stability before Monday
         return entries.sorted { $0.dateEdited > $1.dateEdited }
     }
