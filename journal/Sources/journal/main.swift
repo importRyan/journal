@@ -4,6 +4,10 @@ import Foundation
 import Journaling
 import ArgumentParser
 
+// Overrides for dependency injection via private command line flags
+fileprivate var loader: AppLoader = CommandLineLoader()
+fileprivate var overrideConfig: AppConfig? = nil
+
 // App lazily is loaded after parsing command line input.
 fileprivate(set) var app: Journaling! = nil
 
@@ -12,7 +16,6 @@ OptionsOnlyInterface.main()
 
 // Holds loop open for any async background tasks (e.g., persistence).
 RunLoop.main.run()
-
 
 // MARK: - Launch/Close Methods
 
@@ -57,11 +60,7 @@ fileprivate func reportLoadAttempt() {
     app.logger.log(event: "Attempted to load app more than once.")
 }
 
-
 // MARK: - Overrides for dependency injection via private/public command line flags
-
-fileprivate var loader: AppLoader = CommandLineLoader()
-fileprivate var overrideConfig: AppConfig? = nil
 
 func _setConfigurationOverride(_ override: AppConfig) {
     overrideConfig = override
