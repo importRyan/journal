@@ -5,6 +5,8 @@ import ArgumentParser
 import Journaling
 
 struct List: ParsableCommand {
+    typealias TableViewModel = List.EntriesTableViewModel
+
     static var configuration = CommandConfiguration(
         abstract: "Enumerate your journal entries.",
         shouldDisplay: true,
@@ -26,8 +28,8 @@ struct List: ParsableCommand {
     }
 
     private var tableView = PlainTextTableView(
-        columns: List.EntriesTableViewModel.tableViewColumns,
-        options: List.EntriesTableViewModel.tableViewOptions
+        columns: TableViewModel.tableViewColumns,
+        options: TableViewModel.tableViewOptions
     )
 
     private func displayEmptyMessage() {
@@ -36,7 +38,7 @@ struct List: ParsableCommand {
 
     private func render(entries: [JJEntry]) {
         // Format entries into text table
-        let vm: EntriesListTextOnlyViewModel = List.EntriesTableViewModel(
+        let vm: EntriesListTextOnlyViewModel = TableViewModel(
             entries: entries,
             formatting: app.formatting.current
         )
@@ -56,6 +58,8 @@ public protocol EntriesListTextOnlyViewModel {
     init(entries: [JJEntry], formatting: JJEntryFormatting)
     /// Outer: Rows. Inner: Columns.
     func parseForTableView() -> [[String]]
+    static var tableViewColumns: [PlainTextTableView.Column] { get }
+    static var tableViewOptions: PlainTextTableView.Options { get }
 }
 
 extension List {
@@ -69,6 +73,7 @@ extension List {
             self.formatting = formatting
         }
 
+        /// Using static vars as a workaround because ParsableCommand's has Codable requirements and is immutable, but it would be nice to reuse an initialized TableView
         public static let tableViewColumns: [PlainTextTableView.Column] = [
             .init(
                 title: "Title",
