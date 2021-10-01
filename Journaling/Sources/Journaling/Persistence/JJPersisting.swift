@@ -3,7 +3,7 @@
 import Foundation
 import Combine
 
-public protocol Persisting: AnyObject {
+public protocol JJPersisting: AnyObject {
 
     /// Responds to ID collisions after a file save
     var errorHandlingDelegate: PersistingErrorHandlingDelegate? { get set }

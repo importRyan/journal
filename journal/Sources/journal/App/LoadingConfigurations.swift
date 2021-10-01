@@ -4,13 +4,15 @@
 import Foundation
 import Journaling
 
-extension DevelopmentConfig {
+// MARK: - Convenience to provide a default formatter to the loading configuration inits
+
+extension JJDevelopmentConfig {
     init() {
         self.init(formatting: TerminalJJEntryFormatter())
     }
 }
 
-extension AddOnlyDevelopmentConfig {
+extension JJAddEntriesOnlyDevelopmentConfig {
     init() {
         self.init(formatting: TerminalJJEntryFormatter())
     }

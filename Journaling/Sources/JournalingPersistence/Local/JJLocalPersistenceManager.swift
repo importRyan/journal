@@ -5,13 +5,13 @@ import Foundation
 import Journaling
 import Combine
 
-public class LocalPersistenceManager {
+public class JJLocalPersistenceManager {
 
     public var errorHandlingDelegate: PersistingErrorHandlingDelegate?
-    private weak var logger: Logging?
+    private weak var logger: JJLogging?
     private let queue: DispatchQueue
-    private let mode: EntryLoadingMode
-    private let location: JournalLibraryLocation
+    private let mode: JJEntryLoadingMode
+    private let location: JJJournalLibraryLocation
 
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
@@ -30,9 +30,9 @@ public class LocalPersistenceManager {
     ///   - logger: Logging service
     ///   - queue: Serial queue
     public init(
-        mode: EntryLoadingMode,
-        location: JournalLibraryLocation,
-        logger: Logging,
+        mode: JJEntryLoadingMode,
+        location: JJJournalLibraryLocation,
+        logger: JJLogging,
         queue: DispatchQueue = .init(label: "\(appIdentifier).localPersistence", qos: .background)
     ) {
         self.queue = queue
@@ -45,9 +45,9 @@ public class LocalPersistenceManager {
     /// Allows injecting a wrapper spy for testing.
     /// - Parameters:
     ///   - wrapper: Override the save container by providing an initialized wrapper
-    internal convenience init(mode: EntryLoadingMode,
-                location: JournalLibraryLocation,
-                logger: Logging,
+    internal convenience init(mode: JJEntryLoadingMode,
+                location: JJJournalLibraryLocation,
+                logger: JJLogging,
                 queue: DispatchQueue = .init(label: "\(appIdentifier).localPersistence", qos: .background),
                 wrapper: FileWrapper? = nil
     ) {
@@ -58,7 +58,7 @@ public class LocalPersistenceManager {
 
 // MARK: - API
 
-extension LocalPersistenceManager: Persisting {
+extension JJLocalPersistenceManager: JJPersisting {
 
     public func loadJournalLibrary() -> AnyPublisher<JournalLibraryLoadable, Error> {
         Deferred { Future { [weak self] promise in
@@ -84,7 +84,7 @@ extension LocalPersistenceManager: Persisting {
         queue.async { [self] in
             do {
                 guard let wrapper = wrapper
-                else { throw LocalPersistenceError.persistenceServiceUnavailable }
+                else { throw JJLocalPersistenceError.persistenceServiceUnavailable }
 
                 for entry in entries {
                     try saveToFileWrapper(wrapper, entry: entry)
@@ -112,7 +112,7 @@ extension LocalPersistenceManager: Persisting {
 
 // MARK: - Methods for Loading
 
-private extension LocalPersistenceManager {
+private extension JJLocalPersistenceManager {
 
     @discardableResult
     func getFileWrapperForUserData() throws -> FileWrapper {
@@ -126,7 +126,7 @@ private extension LocalPersistenceManager {
     func loadLibraryFromDisk() throws -> JournalLibraryLoadable {
         let wrapper = try getFileWrapperForUserData()
         guard let userFiles = wrapper.fileWrappers
-        else { throw LocalPersistenceError.directoryContentsReadError }
+        else { throw JJLocalPersistenceError.directoryContentsReadError }
 
         let entries = userFiles.reduce(into: [JJEntry](), parseRegularFileWrapper)
         return .init(entries: entries)
@@ -135,19 +135,19 @@ private extension LocalPersistenceManager {
     func parseRegularFileWrapper(_ results: inout [JJEntry], _ wrapper: Dictionary<String, FileWrapper>.Element) {
         do {
             guard let data = wrapper.value.regularFileContents
-            else { logger?.log(error: LocalPersistenceError.unexpectedItemInUserDirectory(wrapper.key)); return }
+            else { logger?.log(error: JJLocalPersistenceError.unexpectedItemInUserDirectory(wrapper.key)); return }
 
             let entry = try EntrySaveContainer(fileData: data, decoder).parse(using: decoder)
             results.append(entry)
         } catch {
-            logger?.log(error: LocalPersistenceError.unableToParse(file: wrapper.key, error: error))
+            logger?.log(error: JJLocalPersistenceError.unableToParse(file: wrapper.key, error: error))
         }
     }
 }
 
 // MARK: - Methods for Saving
 
-private extension LocalPersistenceManager {
+private extension JJLocalPersistenceManager {
 
     func setupDebouncedWritePipeline() {
         writePipeline = writeScheduler
@@ -205,7 +205,7 @@ private extension LocalPersistenceManager {
 
         guard newKeyUsed == newKey else {
             // Two UUID conflicts?
-            logger?.log(error: LocalPersistenceError.namingCollision(newKey))
+            logger?.log(error: JJLocalPersistenceError.namingCollision(newKey))
             return
         }
 

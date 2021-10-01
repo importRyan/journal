@@ -4,15 +4,15 @@
 import Foundation
 import Combine
 
-public class MockJournalStore {
+public class ConcurrentJournalStore {
 
     private var entries: [JJEntry.ID:JJEntry] = [:]
 
-    private weak var persistence: Persisting?
-    private weak var logging: Logging?
+    private weak var persistence: JJPersisting?
+    private weak var logging: JJLogging?
     private let queue: DispatchQueue
 
-    public init(persistence: Persisting, logger: Logging, queue: DispatchQueue? = nil) {
+    public init(persistence: JJPersisting, logger: JJLogging, queue: DispatchQueue? = nil) {
         self.persistence = persistence
         self.logging = logger
         self.queue = queue ?? DispatchQueue(
@@ -23,12 +23,12 @@ public class MockJournalStore {
     }
 }
 
-extension MockJournalStore: JournalEntryStore {
+extension ConcurrentJournalStore: JJEntriesStore {
 
     /// Starts to load the user library. Returns on an unowned background queue.
     public func start() -> AnyPublisher<Void, Error> {
         guard let persistence = persistence else {
-            return Fail(error: LoadingError.persistenceServiceUnavailable)
+            return Fail(error: JJLoadingError.persistenceServiceUnavailable)
                 .eraseToAnyPublisher()
         }
 
@@ -54,7 +54,7 @@ extension MockJournalStore: JournalEntryStore {
 
 // MARK: - CRUD
 
-extension MockJournalStore: EntriesProviding {
+extension ConcurrentJournalStore: EntriesProviding {
 
     public func getEntry(id: JJEntry.ID) -> JJEntry? {
         var entry: JJEntry? = nil
@@ -75,7 +75,7 @@ extension MockJournalStore: EntriesProviding {
     }
 }
 
-extension MockJournalStore: EntriesEditing {
+extension ConcurrentJournalStore: EntriesEditing {
 
     public func addEntry(title: String, content: String) {
         queue.async(flags: .barrier) {
@@ -92,7 +92,7 @@ extension MockJournalStore: EntriesEditing {
 
 // MARK: - Handle an unlikely UUID collision when saving files
 
-extension MockJournalStore: PersistingErrorHandlingDelegate {
+extension ConcurrentJournalStore: PersistingErrorHandlingDelegate {
 
     public func entryIDsDidChangeFromConflict(_ changes: [JJEntryIDChangeInfo]) {
         for change in changes {

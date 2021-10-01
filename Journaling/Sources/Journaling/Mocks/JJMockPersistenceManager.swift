@@ -4,17 +4,17 @@
 import Foundation
 import Combine
 
-public class MockPersistenceManager {
+public class JJMockPersistenceManager {
 
     public weak var errorHandlingDelegate: PersistingErrorHandlingDelegate? = nil
-    public private(set) weak var logger: Logging?
+    public private(set) weak var logger: JJLogging?
     public let queue: DispatchQueue
-    public let mode: EntryLoadingMode
-    public let location: JournalLibraryLocation
+    public let mode: JJEntryLoadingMode
+    public let location: JJJournalLibraryLocation
 
-    public init(mode: EntryLoadingMode,
-                location: JournalLibraryLocation,
-                logger: Logging,
+    public init(mode: JJEntryLoadingMode,
+                location: JJJournalLibraryLocation,
+                logger: JJLogging,
                 queue: DispatchQueue = .init(label: "\(appIdentifier).mockPersistence",
                                              qos: .background)) {
         self.queue = queue
@@ -24,7 +24,7 @@ public class MockPersistenceManager {
     }
 }
 
-extension MockPersistenceManager: Persisting {
+extension JJMockPersistenceManager: JJPersisting {
 
     public func loadJournalLibrary() -> AnyPublisher<JournalLibraryLoadable, Error> {
         switch mode {
@@ -59,7 +59,7 @@ extension MockPersistenceManager: Persisting {
 
 // MARK: - Mock Data State
 
-extension MockPersistenceManager {
+extension JJMockPersistenceManager {
 
     /// Updated on "saves"
     public static var mockEntries: [JJEntry] = makeMockEntries(count: 5)
@@ -68,7 +68,7 @@ extension MockPersistenceManager {
 
 // MARK: - Fake Data Generation Methods
 
-extension MockPersistenceManager {
+extension JJMockPersistenceManager {
 
     private static func makeMockLoadable(overridingEntries: [JJEntry]? = nil) -> JournalLibraryLoadable {
         JournalLibraryLoadable(entries: overridingEntries ?? Self.mockEntries)

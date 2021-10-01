@@ -4,10 +4,10 @@
 import Foundation
 import os
 
-public class SystemLogger {
+public class JJSystemLogger {
 
-    public var sessionEvents: [LoggedEvent] = []
-    public var sessionErrors: [LoggedEvent] = []
+    public var sessionEvents: [JJLoggedEvent] = []
+    public var sessionErrors: [JJLoggedEvent] = []
 
     private let logger: Logger
 
@@ -16,16 +16,16 @@ public class SystemLogger {
     }
 }
 
-extension SystemLogger: Logging {
+extension JJSystemLogger: JJLogging {
 
-    public func log(event: String, priority: LoggedEvent.Priority = .informational) {
+    public func log(event: String, priority: JJLoggedEvent.Priority = .informational) {
         logger.log(level: priority.oslog, "\(event)")
         #if DEBUG
         sessionEvents.append(.init(priority: priority, message: event))
         #endif
     }
 
-    public func log(error: Error, priority: LoggedEvent.Priority = .criticalError) {
+    public func log(error: Error, priority: JJLoggedEvent.Priority = .criticalError) {
         logger.log(level: priority.oslog, "\(error.localizedDescription)")
         #if DEBUG
         sessionErrors.append(.init(error: error, priority: priority))
@@ -33,7 +33,7 @@ extension SystemLogger: Logging {
     }
 }
 
-fileprivate extension LoggedEvent.Priority {
+fileprivate extension JJLoggedEvent.Priority {
     var oslog: OSLogType {
         switch self {
             case .systemFault: return .fault

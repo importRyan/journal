@@ -5,11 +5,11 @@ import Journaling
 import ArgumentParser
 
 // Overrides for dependency injection via private command line flags
-fileprivate var loader: AppLoader = CommandLineLoader()
-fileprivate var overrideConfig: AppConfig? = nil
+fileprivate var loader: JJAppLoader = CommandLineLoader()
+fileprivate var overrideConfig: JJAppConfig? = nil
 
 // App lazily is loaded after parsing command line input.
-fileprivate(set) var app: Journaling! = nil
+fileprivate(set) var app: JJJournaling! = nil
 
 // Launches the command line user interface.
 OptionsOnlyInterface.main()
@@ -24,7 +24,7 @@ RunLoop.main.run()
 ///
 func startApp<T: ParsableCommand>(
     from command: T,
-    config: AppConfig = DevelopmentConfig(),
+    config: JJAppConfig = JJDevelopmentConfig(),
     didStart: @escaping () -> Void) {
 
         guard app == nil else {
@@ -62,10 +62,10 @@ fileprivate func reportLoadAttempt() {
 
 // MARK: - Overrides for dependency injection via private/public command line flags
 
-func _setConfigurationOverride(_ override: AppConfig) {
+func _setConfigurationOverride(_ override: JJAppConfig) {
     overrideConfig = override
 }
 
-func _setLoaderOverride(_ override: AppLoader) {
+func _setLoaderOverride(_ override: JJAppLoader) {
     loader = override
 }

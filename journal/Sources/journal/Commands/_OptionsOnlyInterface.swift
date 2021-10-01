@@ -39,10 +39,10 @@ struct OptionsOnlyInterface: ParsableCommand {
 
     func _handleDevelopmentFlags() {
         if lazilyLoadEntriesOverride {
-            _setConfigurationOverride(AddOnlyDevelopmentConfig())
+            _setConfigurationOverride(JJAddEntriesOnlyDevelopmentConfig())
         }
         if useMockLoader {
-            _setLoaderOverride(MockLoader())
+            _setLoaderOverride(JJMockLoader())
         }
     }
 }

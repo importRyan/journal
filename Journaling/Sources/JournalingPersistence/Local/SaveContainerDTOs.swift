@@ -4,7 +4,7 @@
 import Foundation
 import Journaling
 
-struct EntrySaveContainer: Codable {
+internal struct EntrySaveContainer: Codable {
     let versionSentinel: Int
     let data: Data
 
@@ -25,7 +25,7 @@ struct EntrySaveContainer: Codable {
 
     func parse(using decoder: JSONDecoder) throws -> JJEntry {
         guard let dto = try LatestDTO(data: data, json: decoder)
-        else { throw LocalPersistenceError.parsingFailedForDTO("\(LatestDTO.self)") }
+        else { throw JJLocalPersistenceError.parsingFailedForDTO("\(LatestDTO.self)") }
         return dto.makeJJEntry()
     }
 }
@@ -39,14 +39,14 @@ struct EntrySaveContainer: Codable {
 // A real application opening legacy files could balance speed and verbosity
 // by using the `versionSentinel` to enter this linked list at different nodes.
 //
-protocol JJEntryDTO: Codable {
+internal protocol JJEntryDTO: Codable {
     associatedtype PreviousDTO: JJEntryDTO
     init?(data: Data, json: JSONDecoder) throws
 }
 
 // MARK: - Latest Model-to-DTO-to-Model Conversions
 
-typealias LatestDTO = EntryDTO1
+internal typealias LatestDTO = EntryDTO1
 extension LatestDTO {
     static let versionSentinel = 1
 
@@ -88,7 +88,7 @@ internal struct EntryDTO1: JJEntryDTO {
         guard let current = try? json.decode(Self.self, from: data) else {
             guard Self.self != PreviousDTO.self,
                   let previous = try PreviousDTO(data: data, json: json)
-            else { throw LocalPersistenceError.parsingFailedForDTO("\(Self.self)") }
+            else { throw JJLocalPersistenceError.parsingFailedForDTO("\(Self.self)") }
 
             self.id = previous.id
             self.title = previous.title

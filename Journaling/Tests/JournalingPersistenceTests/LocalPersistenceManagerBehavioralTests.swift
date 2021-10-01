@@ -5,14 +5,14 @@ import XCTest
 @testable import Journaling
 import Combine
 
-class LocalPersistenceManagerBehavioralTests: XCTestCase {
+class JJLocalPersistenceManagerBehavioralTests: XCTestCase {
 
     // MARK: - Init
 
     func test_Initialization_PerformsNoActions() throws {
         let (logger, _, diskSpy) = try setupUtilities()
 
-        let _ = LocalPersistenceManager(
+        let _ = JJLocalPersistenceManager(
             mode: .writeOnlyMode,
             location: .desktop,
             logger: logger,
@@ -27,8 +27,8 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
     func test_Loading_WriteOnlyMode_ReturnsEmptyLibrary_AndPerformsNoWritesOrLogs() throws {
         let (logger, _, diskSpy) = try setupUtilities()
 
-        let sut_mode = EntryLoadingMode.writeOnlyMode
-        let sut = LocalPersistenceManager(
+        let sut_mode = JJEntryLoadingMode.writeOnlyMode
+        let sut = JJLocalPersistenceManager(
             mode: sut_mode,
             location: .desktop,
             logger: logger,
@@ -46,8 +46,8 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
     func test_Loading_ImmediateMode_ReturnsEmptyLibraryWhenDiskEmpty_AndPerformsNoWritesOrLogs() throws {
         let (logger, _, diskSpy) = try setupUtilities()
 
-        let sut_mode = EntryLoadingMode.immediatelyLoadUserEntryLibrary
-        let sut = LocalPersistenceManager(
+        let sut_mode = JJEntryLoadingMode.immediatelyLoadUserEntryLibrary
+        let sut = JJLocalPersistenceManager(
             mode: sut_mode,
             location: .desktop,
             logger: logger,
@@ -67,8 +67,8 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
         let fileWrappers = TestCases.makeRegularFileWrappers(from: mockLibrary)
         let (logger, _, diskSpy) = try setupUtilities(childWrappers: fileWrappers)
 
-        let sut_mode = EntryLoadingMode.immediatelyLoadUserEntryLibrary
-        let sut = LocalPersistenceManager(
+        let sut_mode = JJEntryLoadingMode.immediatelyLoadUserEntryLibrary
+        let sut = JJLocalPersistenceManager(
             mode: sut_mode,
             location: .desktop,
             logger: logger,
@@ -88,7 +88,7 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
     func test_Save_NoEntries_DoesNotPerformWrite() throws {
         let (logger, _, diskSpy) = try setupUtilities()
 
-        let sut = LocalPersistenceManager(
+        let sut = JJLocalPersistenceManager(
             mode: .immediatelyLoadUserEntryLibrary,
             location: .desktop,
             logger: logger,
@@ -105,7 +105,7 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
         let mockLibrary = TestCases.mockLibraryEntries
         let (logger, _, diskSpy) = try setupUtilities()
 
-        let sut = LocalPersistenceManager(
+        let sut = JJLocalPersistenceManager(
             mode: .immediatelyLoadUserEntryLibrary,
             location: .desktop,
             logger: logger,
@@ -151,7 +151,7 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
         let repeatedUserInput = [mockLibrary, mockLibrary, oneDifference, mockLibrary, mockLibrary]
         let (logger, _, diskSpy) = try setupUtilities()
 
-        let sut = LocalPersistenceManager(
+        let sut = JJLocalPersistenceManager(
             mode: .immediatelyLoadUserEntryLibrary,
             location: .desktop,
             logger: logger,
@@ -179,7 +179,7 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
 
         let expectedLogMessages = ["Persistence scheduled to save 3 entries", "Persistence scheduled to save 3 entries", "Persistence scheduled to save 3 entries", "Persistence scheduled to save 3 entries", "Persistence scheduled to save 3 entries", "Persistence finished saving files."]
 
-        let sut = LocalPersistenceManager(
+        let sut = JJLocalPersistenceManager(
             mode: .immediatelyLoadUserEntryLibrary,
             location: .desktop,
             logger: logger,
@@ -204,7 +204,7 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
         diskSpy.replaceFileWrappers(with: TestCases.makeRegularFileWrappers(from: TestCases.mockLibraryEntries))
         let expectedLogMessages = ["Persistence finished saving files."]
 
-        let sut = LocalPersistenceManager(
+        let sut = JJLocalPersistenceManager(
             mode: .immediatelyLoadUserEntryLibrary,
             location: .desktop,
             logger: logger,
@@ -227,7 +227,7 @@ class LocalPersistenceManagerBehavioralTests: XCTestCase {
 
 fileprivate extension XCTestCase {
 
-    func performRemainingTasksBeforeTerminationWithTimeout(of seconds: TimeInterval, _ sut: Persisting) -> Error? {
+    func performRemainingTasksBeforeTerminationWithTimeout(of seconds: TimeInterval, _ sut: JJPersisting) -> Error? {
         let completesTask = XCTestExpectation(description: "Completes termination task")
         var awaitedError: Error? = nil
         switch sut.appWillTerminate() {
@@ -247,7 +247,7 @@ fileprivate extension XCTestCase {
                             timeOut: TimeInterval = 3,
                             waitRegardlessOfWrites: Bool = true,
                             writeCountsExpected: Int? = nil,
-                            _ sut: Persisting,
+                            _ sut: JJPersisting,
                             _ spy: FileWrapperSpy) {
 
         let countDescription = writeCountsExpected == nil ? "" : "\(writeCountsExpected!) times"
@@ -276,7 +276,7 @@ fileprivate extension XCTestCase {
         wait(for: expectations, timeout: timeOut)
     }
 
-    func performLoadLibraryWithTimeout(of seconds: TimeInterval = 0.5, _ sut: Persisting) -> JournalLibraryLoadable? {
+    func performLoadLibraryWithTimeout(of seconds: TimeInterval = 0.5, _ sut: JJPersisting) -> JournalLibraryLoadable? {
 
         let expLoadsLibrary = XCTestExpectation(description: "Loads library")
         var tasks = Set<AnyCancellable>()
@@ -295,7 +295,7 @@ fileprivate extension XCTestCase {
         return loadable
     }
 
-    func AssertNoActivity(spy: FileWrapperSpy, logger: Logging, file: StaticString = #file, line: UInt = #line) {
+    func AssertNoActivity(spy: FileWrapperSpy, logger: JJLogging, file: StaticString = #file, line: UInt = #line) {
         XCTAssertEqual(logger.sessionErrors, [], file: file, line: line)
         XCTAssertEqual(logger.sessionEvents, [], file: file, line: line)
         XCTAssertEqual(spy.countDiskWritesPerformed, 0, file: file, line: line)
@@ -304,14 +304,14 @@ fileprivate extension XCTestCase {
     }
 
     func setupUtilities(
-        location: JournalLibraryLocation = .desktop,
+        location: JJJournalLibraryLocation = .desktop,
         childWrappers: [String:FileWrapper] = [:],
         allowSystemWrites: Bool = false,
         useProvidedWrappersOnly: Bool = true
-    ) throws -> (logger: SystemLogger, url: URL, diskSpy: FileWrapperSpy)  {
+    ) throws -> (logger: JJSystemLogger, url: URL, diskSpy: FileWrapperSpy)  {
 
-        let logger = SystemLogger(label: "testing")
-        let url = try JournalLibraryLocation.desktop.getAppUserDataFolder()
+        let logger = JJSystemLogger(label: "testing")
+        let url = try JJJournalLibraryLocation.desktop.getAppUserDataFolder()
         let diskSpy = FileWrapperSpy(directory: url,
                                      childWrappers: childWrappers,
                                      allowSystemWrites: allowSystemWrites,

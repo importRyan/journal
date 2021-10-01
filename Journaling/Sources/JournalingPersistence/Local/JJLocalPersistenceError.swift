@@ -3,7 +3,7 @@
 
 import Foundation
 
-public enum LocalPersistenceError: Error {
+public enum JJLocalPersistenceError: Error {
     case chosenDirectoryNotReachable
     case directoryContentsReadError
     case parsingFailedForDTO(String)

@@ -16,7 +16,7 @@ struct Add: ParsableCommand {
 
     mutating func run() {
         startApp(from: self,
-                 config: AddOnlyDevelopmentConfig()) { [self] in
+                 config: JJAddEntriesOnlyDevelopmentConfig()) { [self] in
 
             app.store.addEntry(title: title, content: entry)
             exitApp(from: self)

@@ -4,19 +4,19 @@
 import Foundation
 import os
 
-public protocol Logging: AnyObject {
-    var sessionEvents: [LoggedEvent] { get }
-    var sessionErrors: [LoggedEvent] { get }
-    func log(error: Error, priority: LoggedEvent.Priority)
-    func log(event: String, priority: LoggedEvent.Priority)
+public protocol JJLogging: AnyObject {
+    var sessionEvents: [JJLoggedEvent] { get }
+    var sessionErrors: [JJLoggedEvent] { get }
+    func log(error: Error, priority: JJLoggedEvent.Priority)
+    func log(event: String, priority: JJLoggedEvent.Priority)
 }
 
-public extension Logging {
-    func log(error: Error, _ priority: LoggedEvent.Priority = .criticalError) {
+public extension JJLogging {
+    func log(error: Error, _ priority: JJLoggedEvent.Priority = .criticalError) {
         log(error: error, priority: priority)
     }
 
-    func log(event: String, _ priority: LoggedEvent.Priority = .informational) {
+    func log(event: String, _ priority: JJLoggedEvent.Priority = .informational) {
         log(event: event, priority: priority)
     }
 }
@@ -24,7 +24,7 @@ public extension Logging {
 
 // MARK: - Model
 
-public struct LoggedEvent: Hashable, Equatable, Codable {
+public struct JJLoggedEvent: Hashable, Equatable, Codable {
     public let priority: Priority
     public let message: String
     public let time: Date

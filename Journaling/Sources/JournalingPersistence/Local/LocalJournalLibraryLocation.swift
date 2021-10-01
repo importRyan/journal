@@ -4,7 +4,7 @@
 import Foundation
 import Journaling
 
-internal extension JournalLibraryLocation {
+internal extension JJJournalLibraryLocation {
 
     static let localAppDirectoryName = "Journal"
     static let librarySubfolderName = "UserData"
@@ -12,7 +12,7 @@ internal extension JournalLibraryLocation {
     func getAppUserDataFolder() throws -> URL {
         let fm = FileManager.default
         guard let url = self.localURLs().first else {
-            throw LocalPersistenceError.chosenDirectoryNotReachable
+            throw JJLocalPersistenceError.chosenDirectoryNotReachable
         }
 
         let appDirectoryName = Self.localAppDirectoryName

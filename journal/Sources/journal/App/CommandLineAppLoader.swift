@@ -5,21 +5,21 @@ import Foundation
 import Journaling
 import JournalingPersistence
 
-internal class CommandLineLoader: AppLoader {
+internal class CommandLineLoader: JJAppLoader {
 
     init() { }
 
-    func load(with configuration: AppConfig) -> Result<AppLoadables, Error> {
+    func load(with configuration: JJAppConfig) -> Result<JJAppLoadables, Error> {
 
-        let logger = SystemLogger(label: "commandline")
+        let logger = JJSystemLogger(label: "commandline")
 
-        let persistence = LocalPersistenceManager(
+        let persistence = JJLocalPersistenceManager(
             mode: configuration.loadEntries,
             location: configuration.journalLocation,
             logger: logger
         )
 
-        let store = MockJournalStore(
+        let store = ConcurrentJournalStore(
             persistence: persistence,
             logger: logger
         )

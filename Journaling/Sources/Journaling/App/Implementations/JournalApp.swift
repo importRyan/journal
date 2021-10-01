@@ -6,14 +6,14 @@ import Combine
 
 public class JournalApp {
     
-    public let store: JournalEntryStore
-    public let logger: Logging
+    public let store: JJEntriesStore
+    public let logger: JJLogging
     public let formatting: JJFormatting
     
-    private let persistence: Persisting
+    private let persistence: JJPersisting
     private var appStartup: AnyCancellable? = nil
     
-    public required init(loader: AppLoader, config: AppConfig) throws {
+    public required init(loader: JJAppLoader, config: JJAppConfig) throws {
         switch loader.load(with: config) {
             case .success(let loadables):
                 self.store = loadables.store
@@ -27,7 +27,7 @@ public class JournalApp {
     }
 }
 
-extension JournalApp: Journaling {
+extension JournalApp: JJJournaling {
     
     /// Returns on main thread with any error that interrupted loading
     public func start(tasksDidComplete: @escaping (Error?) -> Void) {
