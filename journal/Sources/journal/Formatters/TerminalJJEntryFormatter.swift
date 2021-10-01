@@ -18,16 +18,18 @@ public extension TerminalJJEntryFormatter {
     }
 
     struct Dates: JJDateFormatting {
-        public func format(_ date: Date) -> String {
-            TerminalJJEntryFormatter.Dates.abbreviatedDateTimeFormatter.string(from: date)
-        }
 
-        static fileprivate(set) var abbreviatedDateTimeFormatter: DateFormatter = {
+        var abbreviatedDateTimeFormatter: DateFormatter = {
             var formatter = DateFormatter()
             formatter.dateStyle = .short
             formatter.timeStyle = .short
             return formatter
         }()
+
+        public func format(_ date: Date) -> String {
+            abbreviatedDateTimeFormatter.string(from: date)
+        }
+
     }
 
     struct Titles: JJTitleFormatting {
