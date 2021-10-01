@@ -70,9 +70,7 @@ extension OptionsOnlyInterface {
     func showHelpIfNoCommandsForwarded(_ commands: Bool...) {
         if commands.allSatisfy({ $0 == false }) {
             CommandLine.output(OptionsOnlyInterface.helpMessage())
-            app.exit { _ in
-                Self.exit(withError: ExitCode.validationFailure)
-            }
+            Self.exit(withError: ExitCode.validationFailure)
         }
     }
 }
