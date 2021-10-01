@@ -4,7 +4,7 @@
 import Foundation
 import Journaling
 
-// MARK: - Convenience to provide a default formatter to the loading configuration inits
+// MARK: - Convenience to provide a default formatter to the loading configurations
 
 extension JJDevelopmentConfig {
     init() {

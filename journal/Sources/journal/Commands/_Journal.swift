@@ -4,7 +4,9 @@ import Foundation
 import ArgumentParser
 
 /// Exposes subcommand interface and generates relevant help.
-/// Replace `OptionsOnlyInterface` in main.swift to use.
+/// To adopt, replace `OptionsOnlyInterface` in main.swift and
+/// route --mock and --lazy flags for tests.
+/// 
 struct Journal: ParsableCommand {
     static var configuration = CommandConfiguration(
         abstract: "Store and display personal journal entries.",
