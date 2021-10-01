@@ -6,7 +6,7 @@ let package = Package(
     name: "journal",
     platforms: [.macOS(.v11)],
     dependencies: [
-        .package(name: "swift-argument-parser", path: "../../../SwiftArgumentParser"),
+        .package(name: "swift-argument-parser", path: "../../SwiftArgumentParser"),
         .package(name: "Journaling", path: "../Journaling")
     ],
     targets: [
