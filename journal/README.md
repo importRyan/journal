@@ -2,7 +2,7 @@
 
 ## Usage
 
-To create a new journal entry:
+To create and store a new journal entry:
 ```
 ./journal --create "Contents of a new journal entry" --title "Title of entry"
 ```
@@ -12,24 +12,18 @@ To list journal entries stored by the application:
 ./journal --list
 ```
 
-To export a journal entry (implicitly stated in the assignment):
-```
-./journal --export <entry id, e.g., A3320F10-56E2-4927-94D4-E6E4EBE54C13> <-format -json -plain>
-```
-
 
 ## Dependencies
 
-Command line interaction is coordinated via Apple's ArgumentParser library. It uses reflection on property wrappers to make and parse a tree of commands, with type safety guarantees. 
+Command line interaction is coordinated via Apple's ArgumentParser library, which uses reflection on wrapped properties to make and parse a tree of commands with type safety guarantees. 
 
-Downsides the library are pertinent at larger scales than the current context. Reflection parsing takes some computation, for example. Binaries are also somewhat larger, particularly in Debug mode, which is a problem if one is bundling many command line tools.
+Some downsides the library are pertinent at larger scales than the current context. Reflection parsing takes some computation, for example. Binary size is also somewhat larger, particularly in Debug mode.
 
-Journal is linked to a local fork of Argument Parser, which adds support for subcommand aliases (preparing a PR for issue #248) and pads help prompts with an extra line of padding to personal taste.
+A local fork of Argument Parser is linked to this app. The fork adds support for subcommand aliases (I am preparing a PR for issue #248) and pads help prompts with an extra line of padding to personal taste.
 
 [ArgumentParser](https://github.com/apple/swift-argument-parser)
-[My Fork](https://github.com/importRyan/swift-argument-parser/commits/commandAliasing)
 [Enhancement Issue 248](https://github.com/apple/swift-argument-parser/issues/248)
-
+[My Fork](https://github.com/importRyan/swift-argument-parser/commits/commandAliasing)
 
 ## Assignment Requirements
 
