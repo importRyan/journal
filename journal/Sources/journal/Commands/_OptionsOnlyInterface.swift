@@ -26,6 +26,7 @@ struct OptionsOnlyInterface: ParsableCommand {
     @Flag  (name: .customLong("list"),   help: .init(List.configuration.abstract)) var enumerateEntries = false
     // Test usage
     @Flag  (name: .customLong("lazy"), help: .hidden) var lazilyLoadEntriesOverride = false
+    @Flag  (name: .customLong("mock"), help: .hidden) var useMockLoader = false
 
     mutating func run() throws {
         #if DEBUG
@@ -39,6 +40,9 @@ struct OptionsOnlyInterface: ParsableCommand {
     func _handleDevelopmentFlags() {
         if lazilyLoadEntriesOverride {
             _setConfigurationOverride(AddOnlyDevelopmentConfig())
+        }
+        if useMockLoader {
+            _setLoaderOverride(MockLoader())
         }
     }
 }
@@ -70,9 +74,7 @@ extension OptionsOnlyInterface {
     func showHelpIfNoCommandsForwarded(_ commands: Bool...) {
         if commands.allSatisfy({ $0 == false }) {
             CommandLine.output(OptionsOnlyInterface.helpMessage())
-            app.exit { _ in
-                Self.exit(withError: ExitCode.validationFailure)
-            }
+            Self.exit(withError: ExitCode.validationFailure)
         }
     }
 }

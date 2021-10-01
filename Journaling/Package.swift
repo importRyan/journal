@@ -9,6 +9,9 @@ let package = Package(
         .library(
             name: "Journaling",
             targets: ["Journaling"]),
+        .library(
+            name: "JournalingPersistence",
+            targets: ["JournalingPersistence"]),
     ],
     dependencies: [
     ],
@@ -16,8 +19,14 @@ let package = Package(
         .target(
             name: "Journaling",
             dependencies: []),
+        .target(
+            name: "JournalingPersistence",
+            dependencies: ["Journaling"]),
         .testTarget(
             name: "JournalingTests",
             dependencies: ["Journaling"]),
+        .testTarget(
+            name: "JournalingPersistenceTests",
+            dependencies: ["JournalingPersistence"]),
     ]
 )

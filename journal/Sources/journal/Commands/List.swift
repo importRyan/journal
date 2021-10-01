@@ -12,7 +12,7 @@ struct List: ParsableCommand {
     )
 
     mutating func run() {
-        startApp { [self] in
+        startApp(from: self) { [self] in
             let entries = app.store.listEntries()
 
             if entries.isEmpty {
@@ -21,9 +21,7 @@ struct List: ParsableCommand {
                 render(entries: entries)
             }
 
-            app.exit { _ in
-                Self.exit()
-            }
+            exitApp(from: self)
         }
     }
 

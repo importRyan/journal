@@ -14,7 +14,7 @@ public protocol Persisting: AnyObject {
     /// Saves one or more entries asynchronously.
     func save(entries: [JJEntry])
 
-    func performRemainingTasksBeforeTermination(tasksDidComplete: @escaping (Error?) -> Void)
+    func appWillTerminate() -> Result<Void,Error>
 }
 
 public protocol PersistingErrorHandlingDelegate: AnyObject {
@@ -24,8 +24,11 @@ public protocol PersistingErrorHandlingDelegate: AnyObject {
 }
 
 /// Contents of the app's persistent store
-public struct JournalLibraryLoadable {
+public struct JournalLibraryLoadable: Equatable {
     public let entries: [JJEntry]
+    public init(entries: [JJEntry] = []) {
+        self.entries = entries
+    }
 }
 
 /// Communicates ID collections when saving

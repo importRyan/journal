@@ -15,13 +15,11 @@ struct Add: ParsableCommand {
     @Option(name: .shortAndLong, help: Help.entry) var entry: String = ""
 
     mutating func run() {
-        startApp(config: AddOnlyDevelopmentConfig()) { [self] in
+        startApp(from: self,
+                 config: AddOnlyDevelopmentConfig()) { [self] in
 
             app.store.addEntry(title: title, content: entry)
-
-            app.exit { _ in
-                Self.exit()
-            }
+            exitApp(from: self)
         }
     }
 

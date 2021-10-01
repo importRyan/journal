@@ -3,7 +3,7 @@
 
 import Foundation
 
-public protocol JournalingApp: AnyObject {
+public protocol Journaling: AnyObject {
 
     init(loader: AppLoader, config: AppConfig) throws
     
@@ -12,7 +12,7 @@ public protocol JournalingApp: AnyObject {
     var formatting: JJFormatting { get }
 
     func start(tasksDidComplete: @escaping (Error?) -> Void)
-    func exit(tasksDidComplete: @escaping (Error?) -> Void)
+    func appWillTerminate() -> Result<Void,Error>
 }
 
 public let appIdentifier = "com.ryanferrell.journaling"

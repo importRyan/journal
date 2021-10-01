@@ -7,17 +7,20 @@ import Combine
 public class MockPersistenceManager {
 
     public weak var errorHandlingDelegate: PersistingErrorHandlingDelegate? = nil
-    private weak var logger: Logging?
-    private let queue: DispatchQueue
-    private let mode: EntryLoadingMode
+    public private(set) weak var logger: Logging?
+    public let queue: DispatchQueue
+    public let mode: EntryLoadingMode
+    public let location: JournalLibraryLocation
 
     public init(mode: EntryLoadingMode,
+                location: JournalLibraryLocation,
                 logger: Logging,
                 queue: DispatchQueue = .init(label: "\(appIdentifier).mockPersistence",
                                              qos: .background)) {
         self.queue = queue
         self.mode = mode
         self.logger = logger
+        self.location = location
     }
 }
 
@@ -46,10 +49,10 @@ extension MockPersistenceManager: Persisting {
         Self.mockEntries.append(contentsOf: entries)
     }
 
-    public func performRemainingTasksBeforeTermination(tasksDidComplete: @escaping (Error?) -> Void) {
-        queue.asyncAfter(deadline: .now() + 0.3) { [self] in
+    public func appWillTerminate() -> Result<Void, Error> {
+        queue.sync { [self] in
             self.logger?.log(event: "Persistence finished saving files.")
-            tasksDidComplete(nil)
+            return .success(())
         }
     }
 }

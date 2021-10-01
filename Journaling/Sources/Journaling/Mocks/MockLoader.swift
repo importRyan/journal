@@ -15,7 +15,9 @@ public class MockLoader: AppLoader {
         let config = overrideConfig ?? configuration
 
         let logger = SystemLogger(label: "mocks")
-        let persistence = MockPersistenceManager(mode: config.loadEntries, logger: logger)
+        let persistence = MockPersistenceManager(mode: config.loadEntries,
+                                                 location: config.journalLocation,
+                                                 logger: logger)
         let store = MockJournalStore(persistence: persistence, logger: logger)
         let formatter = JJStaticFormattingStore(formatter: config.formatting)
 

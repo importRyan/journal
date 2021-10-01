@@ -4,26 +4,29 @@
 import Foundation
 import Combine
 
-public class MockJournalStore: JournalEntryStore {
+public class MockJournalStore {
 
     private var entries: [JJEntry.ID:JJEntry] = [:]
 
     private weak var persistence: Persisting?
     private weak var logging: Logging?
-    private let queue = DispatchQueue(label: "\(appIdentifier).mockStore",
-                                      qos: .userInitiated,
-                                      attributes: .concurrent)
+    private let queue: DispatchQueue
 
-    public init(persistence: Persisting, logger: Logging) {
+    public init(persistence: Persisting, logger: Logging, queue: DispatchQueue? = nil) {
         self.persistence = persistence
         self.logging = logger
+        self.queue = queue ?? DispatchQueue(
+            label: "\(appIdentifier).journalstore",
+            qos: .userInitiated,
+            attributes: .concurrent
+        )
     }
 }
 
-public extension MockJournalStore {
-    /// Returns on unowned background thread.
-    /// Coordinates initial loading of the user library.
-    func start() -> AnyPublisher<Void, Error> {
+extension MockJournalStore: JournalEntryStore {
+
+    /// Starts to load the user library. Returns on an unowned background queue.
+    public func start() -> AnyPublisher<Void, Error> {
         guard let persistence = persistence else {
             return Fail(error: LoadingError.persistenceServiceUnavailable)
                 .eraseToAnyPublisher()
@@ -39,6 +42,13 @@ public extension MockJournalStore {
             })
             .map { _ in () }
             .eraseToAnyPublisher()
+    }
+
+    /// Enqueues the app's closing tasks behind any user intents on the store's queue
+    public func appWillTerminate() -> Result<Void, Error> {
+        queue.sync {
+            .success(())
+        }
     }
 }
 
@@ -60,7 +70,7 @@ extension MockJournalStore: EntriesProviding {
         queue.sync {
             entries = self.entries.map(\.value)
         }
-        // Temporary convenience for stability before Monday
+        // Temporary convenience for order stability before Monday
         return entries.sorted { $0.dateEdited > $1.dateEdited }
     }
 }
@@ -80,7 +90,7 @@ extension MockJournalStore: EntriesEditing {
     }
 }
 
-// MARK: - Handle an unlikely persistence UUID collision
+// MARK: - Handle an unlikely UUID collision when saving files
 
 extension MockJournalStore: PersistingErrorHandlingDelegate {
 

@@ -15,6 +15,7 @@ let package = Package(
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Journaling", package: "Journaling"),
+                .product(name: "JournalingPersistence", package: "Journaling")
             ]),
         .testTarget(
             name: "journalTests",
