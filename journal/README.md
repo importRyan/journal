@@ -12,18 +12,24 @@ To list journal entries stored by the application:
 ./journal --list
 ```
 
+## About
 
-## Dependencies
+Command line interactions use Apple's ArgumentParser library, which reflects wrapped properties to create a tree of commands with type safety guarantees. It also offers typo suggestions based on edit distance.*
 
-Command line interaction is coordinated via Apple's ArgumentParser library, which uses reflection on wrapped properties to make and parse a tree of commands with type safety guarantees. 
+As some recompense for using a dependency, a local fork of Argument Parser is linked to this app. The fork adds support for subcommand aliases (I am preparing a PR for issue #248) and pads help prompts with an extra line of padding to personal taste.
 
-Some downsides the library are pertinent at larger scales than the current context. Reflection parsing takes some computation, for example. Binary size is also somewhat larger, particularly in Debug mode.
-
-A local fork of Argument Parser is linked to this app. The fork adds support for subcommand aliases (I am preparing a PR for issue #248) and pads help prompts with an extra line of padding to personal taste.
-
-[ArgumentParser](https://github.com/apple/swift-argument-parser)
+[Fork](https://github.com/importRyan/swift-argument-parser/commits/commandAliasing)
 [Enhancement Issue 248](https://github.com/apple/swift-argument-parser/issues/248)
-[My Fork](https://github.com/importRyan/swift-argument-parser/commits/commandAliasing)
+[ArgumentParser](https://github.com/apple/swift-argument-parser)
+
+`journal` starts by calling `.main()` on a ParsableCommand that acts as a router, forwarding relevant parsed arguments. The destination ParsableCommand acts like both an AppDelegate and ViewController in coordinating user input, model output to a table view, and configuring some aspects of the app's launch. A `PlainTextTableView` handles constraint-based column layout and in-column text wrapping.
+
+To ensure async disk writes finish before the process terminates, the RunLoop is held open. Serial and concurrent queues run the persistent and in-memory model data stores, respectively. App exit schedules itself first behind any in-memory store writes to ensure any edits reach the persistent store. (For a command line app this simple, non-synchronous design is rather comical, maybe deleterious. It may be relevant for a UI layer with more expensive features and opportunities for race conditions.)
+
+The persistent store writes entries as separate JSON files inside versioned containers, which recursively try to decode older containers by a "singly linked list" of associate types. A list of objects in the non-UI portion are in the `Journaling` package readme.
+
+* Some downsides of the library are pertinent at larger scales than the current context. Reflection parsing takes some computation, for example. Binary size is also somewhat larger, particularly in Debug mode.
+
 
 ## Assignment Requirements
 
