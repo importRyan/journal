@@ -5,7 +5,11 @@ import Foundation
 
 public class JJMockLoader: JJAppLoader {
 
-    public init() { }
+    public let seedEntries: [JJEntry]
+
+    public init(seedEntries: [JJEntry] = JJMockPersistenceManager.makeMockEntries(count: 5)) {
+        self.seedEntries = seedEntries
+    }
     public var overrideConfig: JJAppConfig? = nil
     public weak var loggerReference: JJSystemLogger? = nil
     public weak var persistenceReference: JJMockPersistenceManager? = nil
@@ -17,6 +21,7 @@ public class JJMockLoader: JJAppLoader {
         let logger = JJSystemLogger(label: "mocks")
 
         let persistence = JJMockPersistenceManager(
+            seedEntries: seedEntries,
             mode: config.loadEntries,
             location: config.journalLocation,
             logger: logger

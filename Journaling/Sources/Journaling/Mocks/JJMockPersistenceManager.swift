@@ -6,17 +6,22 @@ import Combine
 
 public class JJMockPersistenceManager {
 
+    public var mockEntries: [JJEntry]
+
     public weak var errorHandlingDelegate: PersistingErrorHandlingDelegate? = nil
     public private(set) weak var logger: JJLogging?
     public let queue: DispatchQueue
     public let mode: JJEntryLoadingMode
     public let location: JJJournalLibraryLocation
 
-    public init(mode: JJEntryLoadingMode,
-                location: JJJournalLibraryLocation,
-                logger: JJLogging,
-                queue: DispatchQueue = .init(label: "\(appIdentifier).mockPersistence",
-                                             qos: .background)) {
+    public init(
+        seedEntries: [JJEntry],
+        mode: JJEntryLoadingMode,
+        location: JJJournalLibraryLocation,
+        logger: JJLogging,
+        queue: DispatchQueue = .init(label: "\(appIdentifier).mockPersistence",
+                                     qos: .background)) {
+        self.mockEntries = seedEntries
         self.queue = queue
         self.mode = mode
         self.logger = logger
@@ -37,7 +42,7 @@ extension JJMockPersistenceManager: JJPersisting {
                 }}.eraseToAnyPublisher()
 
             case .immediatelyLoadUserEntryLibrary:
-                return Just(Self.makeMockLoadable())
+                return Just(Self.makeMockLoadable(overridingEntries: mockEntries))
                     .setFailureType(to: Error.self)
                     .delay(for: 0.25, tolerance: nil, scheduler: queue)
                     .eraseToAnyPublisher()
@@ -46,7 +51,7 @@ extension JJMockPersistenceManager: JJPersisting {
 
     public func save(entries: [JJEntry]) {
         logger?.log(event: "Persistence saved \(entries.endIndex) entries")
-        Self.mockEntries.append(contentsOf: entries)
+        mockEntries.append(contentsOf: entries)
     }
 
     public func appWillTerminate() -> Result<Void, Error> {
@@ -57,21 +62,12 @@ extension JJMockPersistenceManager: JJPersisting {
     }
 }
 
-// MARK: - Mock Data State
-
-extension JJMockPersistenceManager {
-
-    /// Updated on "saves"
-    public static var mockEntries: [JJEntry] = makeMockEntries(count: 5)
-
-}
-
 // MARK: - Fake Data Generation Methods
 
 extension JJMockPersistenceManager {
 
     private static func makeMockLoadable(overridingEntries: [JJEntry]? = nil) -> JournalLibraryLoadable {
-        JournalLibraryLoadable(entries: overridingEntries ?? Self.mockEntries)
+        JournalLibraryLoadable(entries: overridingEntries ?? makeMockEntries(count: 5))
     }
 
     public static func makeMockEntries(count: Int, randomize: Bool = false) -> [JJEntry] {
