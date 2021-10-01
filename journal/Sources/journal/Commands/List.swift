@@ -31,12 +31,15 @@ struct List: ParsableCommand {
         columns: TableViewModel.tableViewColumns,
         options: TableViewModel.tableViewOptions
     )
+}
 
-    private func displayEmptyMessage() {
+private extension List {
+    
+     func displayEmptyMessage() {
         CommandLine.output("No entries available.")
     }
 
-    private func render(entries: [JJEntry]) {
+    func render(entries: [JJEntry]) {
         // Format entries into text table
         let vm: EntriesListTextOnlyViewModel = TableViewModel(
             entries: entries,
