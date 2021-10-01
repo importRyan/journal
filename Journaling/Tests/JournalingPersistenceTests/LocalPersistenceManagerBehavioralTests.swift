@@ -230,9 +230,13 @@ fileprivate extension XCTestCase {
     func performRemainingTasksBeforeTerminationWithTimeout(of seconds: TimeInterval, _ sut: Persisting) -> Error? {
         let completesTask = XCTestExpectation(description: "Completes termination task")
         var awaitedError: Error? = nil
-        sut.performRemainingTasksBeforeTermination { error in
-            awaitedError = error
-            completesTask.fulfill()
+        switch sut.appWillTerminate() {
+            case .failure(let error):
+                awaitedError = error
+                fallthrough
+            case .success:
+                completesTask.fulfill()
+
         }
         wait(for: [completesTask], timeout: seconds)
         return awaitedError
