@@ -316,6 +316,9 @@ fileprivate extension XCTestCase {
                                      childWrappers: childWrappers,
                                      allowSystemWrites: allowSystemWrites,
                                      useProvidedWrappersOnly: useProvidedWrappersOnly)
+
+        assertNoLocalRetainCycle(logger)
+        assertNoLocalRetainCycle(diskSpy)
         return (logger, url, diskSpy)
     }
 }
@@ -391,6 +394,15 @@ enum TestCases {
         let entryDict = Dictionary(keyValues) { lhs, _ in lhs }
         return entryDict.mapValues { entry in
             try! FileWrapper(regularFileWithContents: EntrySaveContainer.encode(entry: entry, with: encoder))
+        }
+    }
+}
+
+public extension XCTestCase {
+
+    func assertNoLocalRetainCycle(_ object: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
+        addTeardownBlock { [weak object] in
+            XCTAssertNil(object, "Not deallocated.", file: file, line: line)
         }
     }
 }
